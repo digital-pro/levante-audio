@@ -1,11 +1,11 @@
 from setuptools import setup
 
 setup(
-    name='ElevenGUI',
-    version='1.0.0',
+    name='LevanteAudio',
+    version='0.0.1',
     description='A GUI application for interacting with ElevenLabs API with added speech-to-text functionality using OpenAI\'s Whisper.',
-    url='https://github.com/winedarkmoon/ElevenGUI',
-    author='winedarkmoon',
+    original_url='https://github.com/winedarkmoon/ElevenGUI',
+    author='winedarkmoon-djc',
     license='MIT',
     install_requires=[
         'certifi==2023.5.7',

@@ -39,11 +39,11 @@ ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 
-class ElevenGUI:
+class LevanteAudio:
 
     def __init__(self):
         self.root = ctk.CTk()
-        self.root.title("ElevenGUI")
+        self.root.title("Levante Audio Test")
         self.window_width = 1400
         self.window_height = 800
         self.screen_width = self.root.winfo_screenwidth()
@@ -238,7 +238,7 @@ class ElevenGUI:
 
     def create_sidebar_logo(self, sidebar_frame):
         logo_label = ctk.CTkLabel(
-            sidebar_frame, text="ElevenGUI", font=ctk.CTkFont(size=20, weight="bold"))
+            sidebar_frame, text="Options", font=ctk.CTkFont(size=20, weight="bold"))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
     def create_sidebar_content(self, sidebar_frame):
@@ -760,4 +760,4 @@ class ElevenGUI:
 
 
 if __name__ == "__main__":
-    ElevenGUI()
+    LevanteAudio()
