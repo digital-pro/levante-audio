@@ -10,7 +10,7 @@ spanish_dataframe = pd.read_excel(spanish_data_file)
 # Create the main window
 # We need to make this a frame inside our main.py
 root = Tk()
-root.title("Pandas Table in Tkinter")
+root.title("Levante Test")
 root.geometry("600x400")
 
 # Create a frame for the Treeview

@@ -13,6 +13,10 @@ import time
 import re
 import logging
 import sys
+
+# try and use our data loaders
+import levanteData
+
 try:
     import openai
     # Whisper API is available
@@ -111,6 +115,31 @@ class LevanteAudio:
         top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
         return top_frame
 
+    # This is where we want our tables to go
+    def create_spanish_table(self):
+        # read by default 1st sheet of an excel file
+        spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
+        spanish_dataframe = pd.read_excel(spanish_data_file)
+
+        # Create a Treeview widget
+        tree = ttk.Treeview(self, columns=list(spanish_dataframe.columns), show='headings')
+
+        # Define headings
+        for col in spanish_dataframe.columns:
+            tree.heading(col, text=col)
+            tree.column(col, anchor='center')
+
+        # Insert data into the Treeview
+        for index, row in spanish_dataframe.iterrows():
+            tree.insert("", "end", values=list(row))
+
+        # Pack the Treeview widget
+        tree.pack(fill='both', expand=True)
+        return tree
+    
+#    def create_german_table(self):
+#        return german_table
+    
     def create_text_box(self):
         text_box = ctk.CTkTextbox(self.root, wrap=ctk.WORD)
         text_box.grid(row=2, column=1, sticky="nsew", padx=10, pady=(10, 0))
