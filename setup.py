@@ -15,6 +15,8 @@ setup(
         'darkdetect==0.8.0',
         'idna==3.4',
         'numpy==1.24.3',
+        'openpyxl==3.1.5'
+        'pandas==2.2.3',
         'Pillow==9.5.0',
         'pycparser==2.21',
         'python-dotenv==1.0.0',
