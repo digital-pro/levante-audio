@@ -13,34 +13,17 @@ import time
 import re
 import logging
 import sys
-# bad form, but seems to be required?
-from CTkTable import *
 
-# only needed if we put our import code in main.py
+# Needed if we put our import code in main.py
 import pandas as pd
-
-# try and use our data loaders
+# Or try and use our data loaders
 #import levanteData
-
-try:
-    import openai
-    # Whisper API is available
-except ImportError:
-    openai = None
-    # Handle Whisper API not being available
-
-try:
-    import whisper
-    # Whisper Local is available
-except ImportError:
-    whisper = None
-    # Handle Whisper Local not being available
 
 
 # Modes: "System" (standard), "Dark", "Light"
-ctk.set_appearance_mode("Light")
+ctk.set_appearance_mode("Dark")
 # Themes: "blue" (standard), "green", "dark-blue"
-ctk.set_default_color_theme("blue")
+ctk.set_default_color_theme("dark-blue")
 
 
 load_dotenv()
@@ -124,26 +107,28 @@ class LevanteAudio:
 
     def create_spanish_frame(self):
         spanish_frame = ctk.CTkScrollableFrame(self.root, height=400, fg_color="transparent")
+        #Set where we want our frame to appear
         spanish_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
         return spanish_frame
 
     # This is where we want our tables to go
     def create_spanish_table(self):
-        # read by default 1st sheet of an excel file
+
         spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
         spanish_dataframe = pd.read_excel(spanish_data_file)
 
         # Create a tble widget in our frame
-        spanish_table = CTkTable(self.spanish_frame, height=200)
+        spanish_table = ttk.Treeview(master = self.spanish_frame, \
+            height=300)
 
         # Define headings
-        #for col in spanish_dataframe.columns:
-            #spanish_table.heading(col, text=col)
-            #spanish_table.column(col, anchor='center')
+        for col in spanish_dataframe.columns:
+            spanish_table.heading(col, text=col)
+            spanish_table.column(col, anchor='center')
 
         # Insert data into the Treeview
-        #for index, row in spanish_dataframe.iterrows():
-            #spanish_table.insert("", "end", values=list(row))
+        for index, row in spanish_dataframe.iterrows():
+            spanish_table.insert("", "end", values=list(row))
 
         # Pack the Treeview widget ??
         #tree.pack(fill='both', expand=True)
@@ -324,17 +309,15 @@ class LevanteAudio:
         self.tabview = ctk.CTkTabview(rightbar_frame, width=250)
         self.tabview.grid(row=0, column=2, padx=(
             20, 20), pady=(20, 0), sticky="nsew")
-        self.tabview.add("Speech to Text")
-        #self.tabview.add("Tab 2")
-        #self.tabview.add("Tab 3")
-        self.tabview.tab("Speech to Text").grid_columnconfigure(
-            0, weight=1)  # configure grid of individual tabs
-        self.record_button = ctk.CTkButton(
-            self.tabview.tab("Speech to Text"), text="Record audio", command=self.record_audio)
-        self.record_button.grid(row=0, column=0, padx=20, pady=10)
-        self.upload_button = ctk.CTkButton(
-            self.tabview.tab("Speech to Text"), text="Upload audio", command=self.upload_audio)
-        self.upload_button.grid(row=1, column=0, padx=20, pady=10)
+        #self.tabview.add("Speech to Text")
+        #self.tabview.tab("Speech to Text").grid_columnconfigure(
+        #    0, weight=1)  # configure grid of individual tabs
+        #self.record_button = ctk.CTkButton(
+        #    self.tabview.tab("Speech to Text"), text="Record audio", command=self.record_audio)
+        #self.record_button.grid(row=0, column=0, padx=20, pady=10)
+        #self.upload_button = ctk.CTkButton(
+        #    self.tabview.tab("Speech to Text"), text="Upload audio", command=self.upload_audio)
+        #self.upload_button.grid(row=1, column=0, padx=20, pady=10)
         # self.quick_button = ctk.CTkButton(
         #    self.tabview.tab("Speech to Text"), text="Gen audio", command=lambda: Thread(target=generate_async, args=(self, ELEVENLABS_API_KEY, self.right_button, self.progressbar, self.generate_button)).start())
         #self.quick_button.grid(row=2, column=0, padx=20, pady=10)
@@ -724,7 +707,7 @@ class LevanteAudio:
         self.text_box = self.create_text_box()
         # can probably put table creation inside frame
         self.spanish_frame = self.create_spanish_frame()
-        self.table_spanish = self.create_spanish_table()
+        self.spanish_table = self.create_spanish_table()
         self.char_count, self.right_button = self.create_text_status_frame()
         self.settings_label, self.preview_label = self.create_sample_frame()
         self.generate_button_frame = self.create_generate_button_frame()
@@ -771,7 +754,7 @@ class LevanteAudio:
         self.history_frame_visible = False
         self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
         self.top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-        self.table_spanish.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
+        self.spanish_table.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
         self.text_box.grid(row=3, column=1, sticky="nsew", padx=10, pady=10)
         self.text_status_frame.grid(row=4, column=1, sticky="new")
         self.slider_bar_frame.grid(row=5, column=1, padx=(
@@ -784,7 +767,7 @@ class LevanteAudio:
         self.history_frame_visible = True
         self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
         self.top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-        self.table_spanish.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
+        self.spanish_table.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
         self.history_frame = ctk.CTkFrame(self.root)
         self.history_frame.grid(
             row=3, column=1, rowspan=3, sticky="nsew", padx=10, pady=10)
