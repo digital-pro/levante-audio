@@ -111,11 +111,11 @@ class LevanteAudio:
         return top_frame
 
     # if needed for scrollable table
-    def create_spanish_frame(self):
-        spanish_frame = ctk.CTkScrollableFrame(self.root, height=400, fg_color="transparent")
-        #Set where we want our frame to appear
-        spanish_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-        return spanish_frame
+    #def create_spanish_frame(self):
+    #    spanish_frame = ctk.CTkScrollableFrame(self.root, height=400, fg_color="transparent")
+    #    #Set where we want our frame to appear
+    #    spanish_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
+    #    return spanish_frame
 
     # This is where we want our tables to go
     def create_spanish_table(self):
@@ -724,7 +724,7 @@ class LevanteAudio:
         self.top_frame = self.create_top_frame()
         self.text_box = self.create_text_box()
         # can probably put table creation inside frame
-        self.spanish_frame = self.create_spanish_frame()
+        #self.spanish_frame = self.create_spanish_frame()
         self.spanish_table = self.create_spanish_table()
         self.char_count, self.right_button = self.create_text_status_frame()
         self.settings_label, self.preview_label = self.create_sample_frame()
