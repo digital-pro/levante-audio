@@ -24,6 +24,7 @@ setup(
         'requests==2.31.0',
         'sounddevice==0.4.6',
         'soundfile==0.12.1',
+        'ttkwidgets==0.13.0',
         'urllib3==2.0.2',
     ],
     extras_require={

@@ -14,6 +14,11 @@ import re
 import logging
 import sys
 
+# in case we need an add-in table
+from ttkwidgets import Table
+import tkinter as tk
+from tkinter import ttk
+
 # Needed if we put our import code in main.py
 import pandas as pd
 # Or try and use our data loaders
@@ -105,6 +110,7 @@ class LevanteAudio:
         top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
         return top_frame
 
+    # if needed for scrollable table
     def create_spanish_frame(self):
         spanish_frame = ctk.CTkScrollableFrame(self.root, height=400, fg_color="transparent")
         #Set where we want our frame to appear
@@ -118,20 +124,32 @@ class LevanteAudio:
         spanish_dataframe = pd.read_excel(spanish_data_file)
 
         # Create a tble widget in our frame
-        spanish_table = ttk.Treeview(master = self.spanish_frame, \
-            height=300)
-
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+        
         # Define headings
-        for col in spanish_dataframe.columns:
+        style = ttk.Style(self.root)
+        style.theme_use('alt')
+        sortable = tk.BooleanVar(self.root, False)
+        drag_row = tk.BooleanVar(self.root, False)
+        drag_col = tk.BooleanVar(self.root, False)
+
+        columns = ["ID", "Task", "English", "Translated"]
+        spanish_table = Table(self.root, columns=columns, sortable=sortable.get(), drag_cols=drag_col.get(),
+              drag_rows=drag_row.get(), height=6)
+        
+        for col in columns:
             spanish_table.heading(col, text=col)
-            spanish_table.column(col, anchor='center')
+            spanish_table.column(col, width=100, stretch=False)
+
+        for i in range(12):
+            spanish_table.insert('', 'end', iid=i,
+                 values=(i, i) + tuple(i + 10 * j for j in range(2, 7)))
 
         # Insert data into the Treeview
         for index, row in spanish_dataframe.iterrows():
             spanish_table.insert("", "end", values=list(row))
 
-        # Pack the Treeview widget ??
-        #tree.pack(fill='both', expand=True)
         return spanish_table
     
 #    def create_german_table(self):
