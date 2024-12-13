@@ -13,9 +13,14 @@ import time
 import re
 import logging
 import sys
+# bad form, but seems to be required?
+from CTkTable import *
+
+# only needed if we put our import code in main.py
+import pandas as pd
 
 # try and use our data loaders
-import levanteData
+#import levanteData
 
 try:
     import openai
@@ -107,7 +112,9 @@ class LevanteAudio:
         self.root.grid_columnconfigure(1, weight=1)
         self.root.grid_rowconfigure(0, weight=0)
         self.root.grid_rowconfigure(1, weight=0)
-        self.root.grid_rowconfigure(2, weight=1)
+        self.root.grid_rowconfigure(2, weight=0)
+        self.root.grid_rowconfigure(3, weight=0)
+        self.root.grid_rowconfigure(4, weight=0)
         self.root.grid_rowconfigure(6, weight=0)
 
     def create_top_frame(self):
@@ -115,27 +122,32 @@ class LevanteAudio:
         top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
         return top_frame
 
+    def create_spanish_frame(self):
+        spanish_frame = ctk.CTkScrollableFrame(self.root, height=400, fg_color="transparent")
+        spanish_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
+        return spanish_frame
+
     # This is where we want our tables to go
     def create_spanish_table(self):
         # read by default 1st sheet of an excel file
         spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
         spanish_dataframe = pd.read_excel(spanish_data_file)
 
-        # Create a Treeview widget
-        tree = ttk.Treeview(self, columns=list(spanish_dataframe.columns), show='headings')
+        # Create a tble widget in our frame
+        spanish_table = CTkTable(self.spanish_frame, height=200)
 
         # Define headings
-        for col in spanish_dataframe.columns:
-            tree.heading(col, text=col)
-            tree.column(col, anchor='center')
+        #for col in spanish_dataframe.columns:
+            #spanish_table.heading(col, text=col)
+            #spanish_table.column(col, anchor='center')
 
         # Insert data into the Treeview
-        for index, row in spanish_dataframe.iterrows():
-            tree.insert("", "end", values=list(row))
+        #for index, row in spanish_dataframe.iterrows():
+            #spanish_table.insert("", "end", values=list(row))
 
-        # Pack the Treeview widget
-        tree.pack(fill='both', expand=True)
-        return tree
+        # Pack the Treeview widget ??
+        #tree.pack(fill='both', expand=True)
+        return spanish_table
     
 #    def create_german_table(self):
 #        return german_table
@@ -710,6 +722,9 @@ class LevanteAudio:
     def create_main_content(self):
         self.top_frame = self.create_top_frame()
         self.text_box = self.create_text_box()
+        # can probably put table creation inside frame
+        self.spanish_frame = self.create_spanish_frame()
+        self.table_spanish = self.create_spanish_table()
         self.char_count, self.right_button = self.create_text_status_frame()
         self.settings_label, self.preview_label = self.create_sample_frame()
         self.generate_button_frame = self.create_generate_button_frame()
@@ -756,11 +771,12 @@ class LevanteAudio:
         self.history_frame_visible = False
         self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
         self.top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-        self.text_box.grid(row=2, column=1, sticky="nsew", padx=10, pady=10)
-        self.text_status_frame.grid(row=3, column=1, sticky="new")
-        self.slider_bar_frame.grid(row=4, column=1, padx=(
+        self.table_spanish.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
+        self.text_box.grid(row=3, column=1, sticky="nsew", padx=10, pady=10)
+        self.text_status_frame.grid(row=4, column=1, sticky="new")
+        self.slider_bar_frame.grid(row=5, column=1, padx=(
             20, 0), pady=(20, 0), sticky="nsew")
-        self.generate_button_frame.grid(row=5, column=1, sticky="ew", pady=10)
+        self.generate_button_frame.grid(row=6, column=1, sticky="ew", pady=10)
 
     def create_history_frame(self):
         self.clear_content_frames()
@@ -768,9 +784,10 @@ class LevanteAudio:
         self.history_frame_visible = True
         self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
         self.top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
+        self.table_spanish.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
         self.history_frame = ctk.CTkFrame(self.root)
         self.history_frame.grid(
-            row=2, column=1, rowspan=3, sticky="nsew", padx=10, pady=10)
+            row=3, column=1, rowspan=3, sticky="nsew", padx=10, pady=10)
         self.add_menu_display = ctk.CTkFrame(self.history_frame,
                                              corner_radius=15)
         self.add_menu_display.grid(pady=15, padx=15, sticky="nwse")

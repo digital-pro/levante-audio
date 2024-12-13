@@ -11,6 +11,7 @@ setup(
         'certifi==2023.5.7',
         'cffi==1.15.1',
         'charset-normalizer==3.1.0',
+        'ctktable==1.1',
         'customtkinter==5.1.3',
         'darkdetect==0.8.0',
         'idna==3.4',
