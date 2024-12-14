@@ -14,21 +14,25 @@ import re
 import logging
 import sys
 
-# in case we need an add-in table
-from ttkwidgets import Table
-import tkinter as tk
-from tkinter import ttk
+try:
+    import openai
+    # Whisper API is available
+except ImportError:
+    openai = None
+    # Handle Whisper API not being available
 
-# Needed if we put our import code in main.py
-import pandas as pd
-# Or try and use our data loaders
-#import levanteData
+try:
+    import whisper
+    # Whisper Local is available
+except ImportError:
+    whisper = None
+    # Handle Whisper Local not being available
 
 
 # Modes: "System" (standard), "Dark", "Light"
-ctk.set_appearance_mode("Dark")
+ctk.set_appearance_mode("Light")
 # Themes: "blue" (standard), "green", "dark-blue"
-ctk.set_default_color_theme("dark-blue")
+ctk.set_default_color_theme("blue")
 
 
 load_dotenv()
@@ -36,11 +40,11 @@ ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 
-class LevanteAudio:
+class ElevenGUI:
 
     def __init__(self):
         self.root = ctk.CTk()
-        self.root.title("Levante Audio Test")
+        self.root.title("ElevenGUI")
         self.window_width = 1400
         self.window_height = 800
         self.screen_width = self.root.winfo_screenwidth()
@@ -100,9 +104,7 @@ class LevanteAudio:
         self.root.grid_columnconfigure(1, weight=1)
         self.root.grid_rowconfigure(0, weight=0)
         self.root.grid_rowconfigure(1, weight=0)
-        self.root.grid_rowconfigure(2, weight=0)
-        self.root.grid_rowconfigure(3, weight=0)
-        self.root.grid_rowconfigure(4, weight=0)
+        self.root.grid_rowconfigure(2, weight=1)
         self.root.grid_rowconfigure(6, weight=0)
 
     def create_top_frame(self):
@@ -110,51 +112,6 @@ class LevanteAudio:
         top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
         return top_frame
 
-    # if needed for scrollable table
-    #def create_spanish_frame(self):
-    #    spanish_frame = ctk.CTkScrollableFrame(self.root, height=400, fg_color="transparent")
-    #    #Set where we want our frame to appear
-    #    spanish_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-    #    return spanish_frame
-
-    # This is where we want our tables to go
-    def create_spanish_table(self):
-
-        spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
-        spanish_dataframe = pd.read_excel(spanish_data_file)
-
-        # Create a tble widget in our frame
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
-        
-        # Define headings
-        style = ttk.Style(self.root)
-        style.theme_use('alt')
-        sortable = tk.BooleanVar(self.root, False)
-        drag_row = tk.BooleanVar(self.root, False)
-        drag_col = tk.BooleanVar(self.root, False)
-
-        columns = ["ID", "Task", "English", "Translated"]
-        spanish_table = Table(self.root, columns=columns, sortable=sortable.get(), drag_cols=drag_col.get(),
-              drag_rows=drag_row.get(), height=6)
-        
-        for col in columns:
-            spanish_table.heading(col, text=col)
-            spanish_table.column(col, width=100, stretch=False)
-
-        for i in range(12):
-            spanish_table.insert('', 'end', iid=i,
-                 values=(i, i) + tuple(i + 10 * j for j in range(2, 7)))
-
-        # Insert data into the Treeview
-        for index, row in spanish_dataframe.iterrows():
-            spanish_table.insert("", "end", values=list(row))
-
-        return spanish_table
-    
-#    def create_german_table(self):
-#        return german_table
-    
     def create_text_box(self):
         text_box = ctk.CTkTextbox(self.root, wrap=ctk.WORD)
         text_box.grid(row=2, column=1, sticky="nsew", padx=10, pady=(10, 0))
@@ -282,7 +239,7 @@ class LevanteAudio:
 
     def create_sidebar_logo(self, sidebar_frame):
         logo_label = ctk.CTkLabel(
-            sidebar_frame, text="Options", font=ctk.CTkFont(size=20, weight="bold"))
+            sidebar_frame, text="Levante Audio", font=ctk.CTkFont(size=20, weight="bold"))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
     def create_sidebar_content(self, sidebar_frame):
@@ -327,15 +284,17 @@ class LevanteAudio:
         self.tabview = ctk.CTkTabview(rightbar_frame, width=250)
         self.tabview.grid(row=0, column=2, padx=(
             20, 20), pady=(20, 0), sticky="nsew")
-        #self.tabview.add("Speech to Text")
-        #self.tabview.tab("Speech to Text").grid_columnconfigure(
-        #    0, weight=1)  # configure grid of individual tabs
-        #self.record_button = ctk.CTkButton(
-        #    self.tabview.tab("Speech to Text"), text="Record audio", command=self.record_audio)
-        #self.record_button.grid(row=0, column=0, padx=20, pady=10)
-        #self.upload_button = ctk.CTkButton(
-        #    self.tabview.tab("Speech to Text"), text="Upload audio", command=self.upload_audio)
-        #self.upload_button.grid(row=1, column=0, padx=20, pady=10)
+        self.tabview.add("Speech to Text")
+        #self.tabview.add("Tab 2")
+        #self.tabview.add("Tab 3")
+        self.tabview.tab("Speech to Text").grid_columnconfigure(
+            0, weight=1)  # configure grid of individual tabs
+        self.record_button = ctk.CTkButton(
+            self.tabview.tab("Speech to Text"), text="Record audio", command=self.record_audio)
+        self.record_button.grid(row=0, column=0, padx=20, pady=10)
+        self.upload_button = ctk.CTkButton(
+            self.tabview.tab("Speech to Text"), text="Upload audio", command=self.upload_audio)
+        self.upload_button.grid(row=1, column=0, padx=20, pady=10)
         # self.quick_button = ctk.CTkButton(
         #    self.tabview.tab("Speech to Text"), text="Gen audio", command=lambda: Thread(target=generate_async, args=(self, ELEVENLABS_API_KEY, self.right_button, self.progressbar, self.generate_button)).start())
         #self.quick_button.grid(row=2, column=0, padx=20, pady=10)
@@ -712,6 +671,46 @@ class LevanteAudio:
 
         self.table.bind("<<TreeviewSelect>>",
                         lambda event: self.on_treeview_select(self, event))
+
+    def create_spanish_table(self):
+        self.style = ttk.Style()
+        self.style.theme_use("clam")
+        self.style.configure("Tableview",
+                             background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
+                             foreground=ctk.ThemeManager.theme["CTkLabel"]["text_color"][1],
+                             rowheight=120,
+                             fieldbackground=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
+                             bordercolor="#343638",
+                             borderwidth=10)
+        self.style.map('Tableview', background=[('selected', '#22559b')])
+
+        self.style.configure("Tableview.Heading",
+                             background="#565b5e",
+                             foreground="white",
+                             relief="flat")
+
+        self.style.map("Tableview.Heading",
+                       background=[('active', '#3484F0')])
+
+        self.spanish_table = ttk.Treeview(
+                                  columns=('ID', 'English',
+                                           'Translation'),
+                                  selectmode='browse',
+                                  show='headings')
+
+        self.spanish_table.column("#1", anchor="w", minwidth=5, stretch=False)
+        self.spanish_table.column("#2", anchor="w", minwidth=5, stretch=False)
+        self.spanish_table.column("#3", anchor="w", minwidth=200)
+
+        self.spanish_table.heading('ID', text='Item ID', anchor="w")
+        self.spanish_table.heading('English', text='English', anchor="w")
+        self.spanish_table.heading('Translation', text='Spanish', anchor="w")
+
+        self.spanish_table.grid(row=3, column=1, sticky='nsew', padx=10, pady=10)
+
+        self.spanish_table.bind("<<TreeviewSelect>>",
+                        lambda event: self.on_translation_table_select(self, event))
+
     # --------------------------------------------------------------------------------------------
 
     def init_ui(self):
@@ -722,10 +721,8 @@ class LevanteAudio:
 
     def create_main_content(self):
         self.top_frame = self.create_top_frame()
+        self.create_spanish_table()
         self.text_box = self.create_text_box()
-        # can probably put table creation inside frame
-        #self.spanish_frame = self.create_spanish_frame()
-        self.spanish_table = self.create_spanish_table()
         self.char_count, self.right_button = self.create_text_status_frame()
         self.settings_label, self.preview_label = self.create_sample_frame()
         self.generate_button_frame = self.create_generate_button_frame()
@@ -785,10 +782,9 @@ class LevanteAudio:
         self.history_frame_visible = True
         self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
         self.top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-        self.spanish_table.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
         self.history_frame = ctk.CTkFrame(self.root)
         self.history_frame.grid(
-            row=3, column=1, rowspan=3, sticky="nsew", padx=10, pady=10)
+            row=2, column=1, rowspan=3, sticky="nsew", padx=10, pady=10)
         self.add_menu_display = ctk.CTkFrame(self.history_frame,
                                              corner_radius=15)
         self.add_menu_display.grid(pady=15, padx=15, sticky="nwse")
@@ -797,6 +793,7 @@ class LevanteAudio:
         self.add_menu_display.grid_rowconfigure(0, weight=1)
         self.add_menu_display.grid_columnconfigure(0, weight=1)
         self.create_table()
+        self.create_spanish_table()
         self.update_table_style()
         self.populate_table()
 
@@ -807,4 +804,4 @@ class LevanteAudio:
 
 
 if __name__ == "__main__":
-    LevanteAudio()
+    ElevenGUI()
