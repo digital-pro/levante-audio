@@ -611,11 +611,11 @@ class LevanteAudio:
         self.style = ttk.Style()
         self.style.theme_use("clam")
         self.style.configure("Treeview",
-                             background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
-                             foreground=ctk.ThemeManager.theme["CTkLabel"]["text_color"][1],
+                             #background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
+                             #foreground=ctk.ThemeManager.theme["CTkLabel"]["text_color"][1],
                              rowheight=80,
                              font=("Arial", 14),
-                             fieldbackground=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
+                             #fieldbackground=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
                              bordercolor="#343638",
                              borderwidth=10)
         self.style.map('Treeview', background=[('selected', '#22559b')])
