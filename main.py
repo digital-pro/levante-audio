@@ -173,6 +173,10 @@ class LevanteAudio:
 
         return generate_button_frame
 
+    def on_voice_selection_changed(self, *args):
+        if False: # only needed if we have history
+            self.populate_table()
+
     def create_voice_selection_frame(self, top_frame):
         voice_selection_frame = ctk.CTkFrame(
             top_frame, fg_color="transparent")
@@ -186,11 +190,11 @@ class LevanteAudio:
         self.preview_button.pack(side="right")
         voices = fetch_voices(ELEVENLABS_API_KEY)
         voice_names = ["Select voice:"] + [voice['name'] for voice in voices]
-        #self.voice_selection_optionmenu = ctk.CTkOptionMenu(
-        #    voice_selection_frame, values=voice_names,
-            #command=self.on_voice_selection_changed, dynamic_resizing=True)
-        #self.voice_selection_optionmenu.pack(
-        #    side="left", pady=5, fill="x")
+        self.voice_selection_optionmenu = ctk.CTkOptionMenu(
+            voice_selection_frame, values=voice_names,
+            command=self.on_voice_selection_changed, dynamic_resizing=True)
+        self.voice_selection_optionmenu.pack(
+            side="left", pady=5, fill="x")
 
     def create_slider_bar_frame(self):
         self.slider_bar_frame = ctk.CTkFrame(self.root, fg_color="transparent")
@@ -592,7 +596,9 @@ class LevanteAudio:
         if not self.spanish_table.selection():
             return
         selected_item = self.spanish_table.selection()[0]
-        #history_item_id = self.spanish_table.item(selected_item, "tags")[0]
+        # This seems brittle, but should work until it doesn't!
+        translated_text = self.spanish_table.item(selected_item, "values")[3]
+        self.text_box.insert("1.0", translated_text)
         delay = 50
 
         # Stop and unload the current audio
