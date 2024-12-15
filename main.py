@@ -682,6 +682,9 @@ class LevanteAudio:
         spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
         spanish_dataframe = pd.read_excel(spanish_data_file)
 
+        # Treeview doesn't like column headers with a dash
+        spanish_dataframe = spanish_dataframe.rename(columns={"es-co": "es_co"})
+        
         spanish_table = ttk.Treeview(columns=("size", "lastmod"))
         spanish_table.grid(row=2, column=1, sticky="nsew", padx=10, pady=(10, 0))
 
@@ -725,6 +728,11 @@ class LevanteAudio:
         # add contents
         self.spanish_table.insert("",'end', values=("ID", "Task", "Native string", "Translated String","Other Info"))
         self.spanish_table.grid(row=2, column=1, sticky='nsew', padx=10, pady=10)
+
+        # Insert data into the Treeview
+        for index, row in spanish_dataframe.iterrows():
+            values = (row.item_id, row.task, row.en, row.es_co)
+            self.spanish_table.insert("", "end", values=values)
 
         self.spanish_table.bind("<<TreeviewSelect>>",
                         lambda event: self.on_treeview_select(self, event))
