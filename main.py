@@ -18,6 +18,7 @@ import sys
 # For when we need to import data 
 import pandas as pd
 
+# Added features are available if you have OpenAI or Whisper
 try:
     import openai
     # Whisper API is available
@@ -43,7 +44,6 @@ table_row_span = 2 # how many rows our source table(s) want
 load_dotenv()
 ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
 
 class LevanteAudio:
 
@@ -109,6 +109,11 @@ class LevanteAudio:
         self.root.grid_rowconfigure(0, weight=0)
         self.root.grid_rowconfigure(1, weight=0)
         self.root.grid_rowconfigure(2, weight=1)
+
+        #experiment with more rows
+        self.root.grid_rowconfigure(3, weight=1)
+        self.root.grid_rowconfigure(4, weight=1)
+        self.root.grid_rowconfigure(5, weight=1)
         self.root.grid_rowconfigure(6, weight=0)
 
     def create_top_frame(self):
@@ -613,8 +618,8 @@ class LevanteAudio:
         self.style.configure("Treeview",
                              #background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
                              #foreground=ctk.ThemeManager.theme["CTkLabel"]["text_color"][1],
-                             rowheight=80,
-                             font=("Arial", 14),
+                             rowheight=60,
+                             font=("Arial", 16),
                              #fieldbackground=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
                              bordercolor="#343638",
                              borderwidth=10)
