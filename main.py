@@ -38,6 +38,7 @@ ctk.set_appearance_mode("Light")
 # Themes: "blue" (standard), "green", "dark-blue"
 ctk.set_default_color_theme("blue")
 
+table_row_span = 2 # how many rows our source table(s) want
 
 load_dotenv()
 ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
@@ -81,7 +82,6 @@ class LevanteAudio:
         if whisper_local_installed:
             self.whisper_options.append("Whisper Local")
         self.current_selected_row = None
-        self.history_frame_visible = False
         self.configure_grid()
         self.init_ui()
         self.audio_data_played = 0
@@ -118,7 +118,7 @@ class LevanteAudio:
 
     def create_text_box(self):
         text_box = ctk.CTkTextbox(self.root, wrap=ctk.WORD)
-        text_box.grid(row=3, column=1, sticky="nsew", padx=10, pady=(10, 0))
+        #text_box.grid(row=3, column=1, sticky="nsew", padx=10, pady=(10, 0))
         text_box.bind('<Control-v>', lambda event: custom_paste(event,
                       text_box, self.char_count, self.generate_button))
         text_box.bind('<Any-KeyPress>', lambda event: check_character_limit(event,
@@ -130,7 +130,7 @@ class LevanteAudio:
     def create_text_status_frame(self):
         self.text_status_frame = ctk.CTkFrame(
             self.root, fg_color="transparent")
-        self.text_status_frame.grid(row=3, column=1, sticky="new")
+        #self.text_status_frame.grid(row=3, column=1, sticky="new")
 
         char_count = ctk.CTkLabel(
             self.text_status_frame, text="0/5000", font=("Arial", 12), state="disabled")
@@ -144,7 +144,7 @@ class LevanteAudio:
 
     def create_sample_frame(self):
         self.sample_frame = ctk.CTkFrame(self.root)
-        self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
+        #self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
 
         settings_label = ctk.CTkLabel(
             self.sample_frame, text="Settings", font=("Arial", 12), state="disabled")
@@ -159,7 +159,7 @@ class LevanteAudio:
     def create_generate_button_frame(self):
         generate_button_frame = ctk.CTkFrame(
             self.root, fg_color="transparent")
-        generate_button_frame.grid(row=5, column=1, sticky="ew", pady=10)
+        #generate_button_frame.grid(row=5, column=1, sticky="ew", pady=10)
         self.progressbar = ctk.CTkProgressBar(generate_button_frame)
         self.progressbar.configure(mode="indeterminate")
         self.generate_button = ctk.CTkButton(generate_button_frame, text="Generate", command=lambda: Thread(target=generate_async, args=(self, ELEVENLABS_API_KEY, self.right_button, self.progressbar, self.generate_button)).start()
@@ -181,20 +181,16 @@ class LevanteAudio:
         self.preview_button.pack(side="right")
         voices = fetch_voices(ELEVENLABS_API_KEY)
         voice_names = ["Select voice:"] + [voice['name'] for voice in voices]
-        self.voice_selection_optionmenu = ctk.CTkOptionMenu(
-            voice_selection_frame, values=voice_names,
-            command=self.on_voice_selection_changed, dynamic_resizing=True)
-        self.voice_selection_optionmenu.pack(
-            side="left", pady=5, fill="x")
-
-    def on_voice_selection_changed(self, *args):
-        if self.history_frame_visible:
-            self.populate_table()
+        #self.voice_selection_optionmenu = ctk.CTkOptionMenu(
+        #    voice_selection_frame, values=voice_names,
+            #command=self.on_voice_selection_changed, dynamic_resizing=True)
+        #self.voice_selection_optionmenu.pack(
+        #    side="left", pady=5, fill="x")
 
     def create_slider_bar_frame(self):
         self.slider_bar_frame = ctk.CTkFrame(self.root, fg_color="transparent")
-        self.slider_bar_frame.grid(row=4, column=1, padx=(
-            20, 0), pady=(20, 0), sticky="nsew")
+        #self.slider_bar_frame.grid(row=4, column=1, padx=(
+        #    20, 0), pady=(20, 0), sticky="nsew")
 
         self.create_stability_slider_frame(self.slider_bar_frame)
         self.create_clarity_slider_frame(self.slider_bar_frame)
@@ -255,10 +251,6 @@ class LevanteAudio:
             sidebar_frame, text="Voices", command=lambda: self.sidebar_button_event(2))
         sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
 
-        sidebar_button_3 = ctk.CTkButton(
-            sidebar_frame, text="History", command=lambda: self.sidebar_button_event(3))
-        sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-
         appearance_mode_label = ctk.CTkLabel(
             sidebar_frame, text="Appearance Mode:", anchor="w")
         appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
@@ -315,8 +307,7 @@ class LevanteAudio:
 
     def create_audiobar(self):
         audiobar_frame = ctk.CTkFrame(self.root, height=100, corner_radius=0)
-        audiobar_frame.grid(row=6, column=1,
-                            sticky='nsew')
+        #audiobar_frame.grid(row=6, column=1, sticky='nsew')
         self.play_button = ctk.CTkButton(audiobar_frame, width=4, border_spacing=10,
                                          fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                          image=self.play_image, anchor="e", text="", command=lambda: play_temp_audio(self))
@@ -585,7 +576,7 @@ class LevanteAudio:
         self.style.configure("Treeview",
                              background=background_color,
                              foreground=text_color,
-                             rowheight=120,
+                             rowheight=10,
                              fieldbackground=background_color,
                              bordercolor="#343638",
                              borderwidth=10)
@@ -596,7 +587,7 @@ class LevanteAudio:
         if not self.spanish_table.selection():
             return
         selected_item = self.spanish_table.selection()[0]
-        history_item_id = self.spanish_table.item(selected_item, "tags")[0]
+        #history_item_id = self.spanish_table.item(selected_item, "tags")[0]
         delay = 50
 
         # Stop and unload the current audio
@@ -608,74 +599,6 @@ class LevanteAudio:
             self.stream.close()
             self.stream = None
 
-        # Load the new audio after a short delay
-        self.root.after(delay, lambda: get_history_audio(
-            self, history_item_id))
-
-    def populate_table(self):
-        print("Populating table...")
-
-        # Clear the current content of the table
-        for item in self.table.get_children():
-            self.table.delete(item)
-
-        selected_voice_name = self.voice_selection_optionmenu.get()
-        data = fetch_history(ELEVENLABS_API_KEY)
-        max_line_width = 75
-
-        for item in data:
-            # Skip the item if the voice name doesn't match the selected voice
-            if selected_voice_name != "Select voice:" and item["voice_name"] != selected_voice_name:
-                continue
-
-            wrapped_text = wrap_text(item["text"], max_line_width)
-            formatted_date = unix_to_date(item["date_unix"])
-            settings = item["settings"]
-            stability = settings.get("stability", "N/A")
-            similarity_boost = settings.get("similarity_boost", "N/A")
-            self.table.insert("", "end", tags=(str(item["history_item_id"]),), values=(
-                f"{item['voice_name']}\n{formatted_date}", f"Stability: {stability}\nSimilarity Boost: {similarity_boost}", wrapped_text))
-        print("Populated table successfully.")
-
-    def create_table(self):
-        self.style = ttk.Style()
-        self.style.theme_use("clam")
-        self.style.configure("Treeview",
-                             background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
-                             foreground=ctk.ThemeManager.theme["CTkLabel"]["text_color"][1],
-                             rowheight=120,
-                             fieldbackground=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
-                             bordercolor="#343638",
-                             borderwidth=10)
-        self.style.map('Treeview', background=[('selected', '#22559b')])
-
-        self.style.configure("Treeview.Heading",
-                             background="#565b5e",
-                             foreground="white",
-                             relief="flat")
-
-        self.style.map("Treeview.Heading",
-                       background=[('active', '#3484F0')])
-
-        self.table = ttk.Treeview(self.add_menu_display,
-                                  columns=('voice_name', 'settings',
-                                           'text'),
-                                  selectmode='browse',
-                                  show='headings')
-
-        self.table.column("#1", anchor="w", minwidth=5, stretch=False)
-        self.table.column("#2", anchor="w", minwidth=5, stretch=False)
-        self.table.column("#3", anchor="w", minwidth=200)
-
-        self.table.heading('voice_name', text='Voice', anchor="w")
-        self.table.heading('settings', text='Settings', anchor="w")
-        self.table.heading('text', text='Text', anchor="w")
-
-        self.table.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
-
-        self.table.bind("<<TreeviewSelect>>",
-                        lambda event: self.on_treeview_select(self, event))
-
     def create_spanish_table(self):
 
         # Get data first, unless we use levanteData.py
@@ -685,26 +608,24 @@ class LevanteAudio:
         # Treeview doesn't like column headers with a dash
         spanish_dataframe = spanish_dataframe.rename(columns={"es-co": "es_co"})
         
-        spanish_table = ttk.Treeview(height=400)
-
         self.style = ttk.Style()
         self.style.theme_use("clam")
-        self.style.configure("Tableview",
+        self.style.configure("Treeview",
                              background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
                              foreground=ctk.ThemeManager.theme["CTkLabel"]["text_color"][1],
-                             rowheight=120,
-                             #font=("Arial", 24),
+                             rowheight=80,
+                             font=("Arial", 14),
                              fieldbackground=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
                              bordercolor="#343638",
                              borderwidth=10)
-        self.style.map('Tableview', background=[('selected', '#22559b')])
+        self.style.map('Treeview', background=[('selected', '#22559b')])
 
         self.style.configure("Tableview.Heading",
                              background="#565b5e",
                              foreground="white",
                              relief="flat")
 
-        self.style.map("Tableview.Heading",
+        self.style.map("Treeview.Heading",
                        background=[('active', '#3484F0')])
 
         columns = ("ID", "Task", "English", "Spanish")
@@ -713,7 +634,8 @@ class LevanteAudio:
                                 #self.add_menu_display,
                                 columns=columns,
                                 selectmode='browse',
-                                show='headings')
+                                show='headings',
+                                height=10)
 
         spanish_table.column("#1", anchor="w", minwidth=5, stretch=False)
         spanish_table.column("#2", anchor="w", minwidth=5, stretch=False)
@@ -727,7 +649,7 @@ class LevanteAudio:
 
         # add contents
         spanish_table.insert("",'end', values=("ID", "Task", "Native string", "Translated String","Other Info"))
-        spanish_table.grid(row=2, rowspan=3, column=1, sticky='nsew', padx=10, pady=10)
+        spanish_table.grid(row=2, rowspan=table_row_span, column=1, sticky='nsew', padx=10, pady=10)
 
         # Insert data into the Treeview
         for index, row in spanish_dataframe.iterrows():
@@ -767,9 +689,6 @@ class LevanteAudio:
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         ctk.set_appearance_mode(new_appearance_mode)
-        if self.history_frame_visible:
-            # Delay the call to update_table_style
-            self.root.after(30, self.update_table_style)
         # Delay the call to update_idletasks
         self.root.after(30, self.root.update_idletasks)
 
@@ -782,8 +701,6 @@ class LevanteAudio:
             self.switch_to_synthesize_speech()
         elif button_id == 2:
             print("Voice editing functionality coming soon!")
-        elif button_id == 3:
-            self.create_history_frame()
 
     def trigger_dummy_event(self):
         dummy_event = type("DummyEvent", (object,), {"widget": self.spanish_table})()
@@ -792,37 +709,16 @@ class LevanteAudio:
     def switch_to_synthesize_speech(self):
         print("Switching to Synthesize speech view")
         self.clear_content_frames()
-        self.history_frame_visible = False
         self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
         self.top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-        self.spanish_table.grid(row=2, column=1, sticky="nsew", padx=15, pady=0)
-        self.text_box.grid(row=3, column=1, sticky="nsew", padx=10, pady=10)
-        self.text_status_frame.grid(row=4, column=1, sticky="new")
-        self.slider_bar_frame.grid(row=5, column=1, padx=(
+        self.spanish_table.grid(row=2, column=1, rowspan=table_row_span, sticky="nsew", padx=15, pady=0)
+        self.text_box.grid(row=5, column=1, sticky="nsew", padx=10, pady=10)
+        self.text_status_frame.grid(row=6, column=1, sticky="new")
+        self.slider_bar_frame.grid(row=7, column=1, padx=(
             20, 0), pady=(20, 0), sticky="nsew")
-        self.generate_button_frame.grid(row=6, column=1, sticky="ew", pady=10)
+        self.generate_button_frame.grid(row=8, column=1, sticky="ew", pady=10)
 
-    def create_history_frame(self):
-        self.clear_content_frames()
-        ctk.AppearanceModeTracker.add(self.update_table_style)
-        self.history_frame_visible = True
-        self.sample_frame.grid(row=0, column=1, sticky="new", padx=10)
-        self.top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
-        self.history_frame = ctk.CTkFrame(self.root)
-        self.history_frame.grid(
-            row=2, column=1, rowspan=3, sticky="nsew", padx=10, pady=10)
-        self.add_menu_display = ctk.CTkFrame(self.history_frame,
-                                             corner_radius=15)
-        self.add_menu_display.grid(pady=15, padx=15, sticky="nwse")
-        self.history_frame.grid_rowconfigure(0, weight=1)
-        self.history_frame.grid_columnconfigure(0, weight=1)
-        self.add_menu_display.grid_rowconfigure(0, weight=1)
-        self.add_menu_display.grid_columnconfigure(0, weight=1)
-        self.create_table()
-        self.create_spanish_table()
-        self.update_table_style()
-        self.populate_table()
-
+    
     def clear_content_frames(self):
         for widget in self.root.grid_slaves():
             if widget.grid_info()["column"] == 1 and widget.grid_info()["row"] > 1 and widget.grid_info()["row"] != 6:
