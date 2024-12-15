@@ -19,13 +19,13 @@ Ensure you have Python 3.9 or higher installed. Creating a Python virtual enviro
 To install the application, first clone the repository:
 
 ```bash
-git clone https://github.com/winedarkmoon/ElevenGUI.git
+git clone https://github.com/digital-pro/levante-audio.git
 ```
 
 Then navigate into the directory and install the package using pip:
 
 ```bash
-cd ElevenGUI
+cd levante-audio
 pip install .
 
 ```
