@@ -48,9 +48,9 @@ class LevanteAudio:
 
     def __init__(self):
         self.root = ctk.CTk()
-        self.root.title("ElevenGUI")
-        self.window_width = 1400
-        self.window_height = 800
+        self.root.title("Levante Audio")
+        self.window_width = 1280
+        self.window_height = 700
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenheight()
         # Calculate the x and y coordinates to center the window
@@ -61,7 +61,7 @@ class LevanteAudio:
         self.root.geometry('%dx%d+%d+%d' % (self.window_width,
                            self.window_height, self.x, self.y))
 
-        # self.root.geometry("1400x800")
+        # self.root.geometry
         self.image_path = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), "images")
         self.voices_data = fetch_voices(ELEVENLABS_API_KEY)
@@ -593,10 +593,10 @@ class LevanteAudio:
 
     def on_treeview_select(self, event, root):
         # Check if there is a selected item
-        if not self.table.selection():
+        if not self.spanish_table.selection():
             return
-        selected_item = self.table.selection()[0]
-        history_item_id = self.table.item(selected_item, "tags")[0]
+        selected_item = self.spanish_table.selection()[0]
+        history_item_id = self.spanish_table.item(selected_item, "tags")[0]
         delay = 50
 
         # Stop and unload the current audio
@@ -685,8 +685,7 @@ class LevanteAudio:
         # Treeview doesn't like column headers with a dash
         spanish_dataframe = spanish_dataframe.rename(columns={"es-co": "es_co"})
         
-        spanish_table = ttk.Treeview(columns=("size", "lastmod"))
-        spanish_table.grid(row=2, column=1, sticky="nsew", padx=10, pady=(10, 0))
+        spanish_table = ttk.Treeview(height=400)
 
         self.style = ttk.Style()
         self.style.theme_use("clam")
@@ -694,6 +693,7 @@ class LevanteAudio:
                              background=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
                              foreground=ctk.ThemeManager.theme["CTkLabel"]["text_color"][1],
                              rowheight=120,
+                             #font=("Arial", 24),
                              fieldbackground=ctk.ThemeManager.theme["CTkFrame"]["fg_color"][1],
                              bordercolor="#343638",
                              borderwidth=10)
@@ -709,34 +709,34 @@ class LevanteAudio:
 
         columns = ("ID", "Task", "English", "Spanish")
 
-        self.spanish_table = ttk.Treeview(
+        spanish_table = ttk.Treeview(
                                 #self.add_menu_display,
                                 columns=columns,
                                 selectmode='browse',
                                 show='headings')
 
-        self.spanish_table.column("#1", anchor="w", minwidth=5, stretch=False)
-        self.spanish_table.column("#2", anchor="w", minwidth=5, stretch=False)
-        self.spanish_table.column("#3", anchor="w", minwidth=200)
-        self.spanish_table.column("#4", anchor="w", minwidth=200)
+        spanish_table.column("#1", anchor="w", minwidth=5, stretch=False)
+        spanish_table.column("#2", anchor="w", minwidth=5, stretch=False)
+        spanish_table.column("#3", anchor="w", minwidth=200)
+        spanish_table.column("#4", anchor="w", minwidth=200)
 
-        self.spanish_table.heading('ID', text='Item ID', anchor="w")
-        self.spanish_table.heading('Task', text='Item ID', anchor="w")
-        self.spanish_table.heading('English', text='English', anchor="w")
-        self.spanish_table.heading('Spanish', text='Spanish', anchor="w")
+        spanish_table.heading('ID', text='Item ID', anchor="w")
+        spanish_table.heading('Task', text='Item ID', anchor="w")
+        spanish_table.heading('English', text='English', anchor="w")
+        spanish_table.heading('Spanish', text='Spanish', anchor="w")
 
         # add contents
-        self.spanish_table.insert("",'end', values=("ID", "Task", "Native string", "Translated String","Other Info"))
-        self.spanish_table.grid(row=2, column=1, sticky='nsew', padx=10, pady=10)
+        spanish_table.insert("",'end', values=("ID", "Task", "Native string", "Translated String","Other Info"))
+        spanish_table.grid(row=2, rowspan=3, column=1, sticky='nsew', padx=10, pady=10)
 
         # Insert data into the Treeview
         for index, row in spanish_dataframe.iterrows():
             values = (row.item_id, row.task, row.en, row.es_co)
-            self.spanish_table.insert("", "end", values=values)
+            spanish_table.insert("", "end", values=values)
 
-        self.spanish_table.bind("<<TreeviewSelect>>",
+        spanish_table.bind("<<TreeviewSelect>>",
                         lambda event: self.on_treeview_select(self, event))
-
+        return spanish_table
     # --------------------------------------------------------------------------------------------
 
     def init_ui(self):
@@ -786,7 +786,7 @@ class LevanteAudio:
             self.create_history_frame()
 
     def trigger_dummy_event(self):
-        dummy_event = type("DummyEvent", (object,), {"widget": self.table})()
+        dummy_event = type("DummyEvent", (object,), {"widget": self.spanish_table})()
         self.on_treeview_select(dummy_event, self.root)
 
     def switch_to_synthesize_speech(self):
