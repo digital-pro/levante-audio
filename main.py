@@ -1,5 +1,6 @@
 import os
 import customtkinter as ctk
+import tkinter as tk
 from tkinter import ttk, filedialog, StringVar
 from dotenv import load_dotenv
 from PIL import Image
@@ -13,6 +14,9 @@ import time
 import re
 import logging
 import sys
+
+# For when we need to import data 
+import pandas as pd
 
 try:
     import openai
@@ -40,7 +44,7 @@ ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 
-class ElevenGUI:
+class LevanteAudio:
 
     def __init__(self):
         self.root = ctk.CTk()
@@ -109,12 +113,12 @@ class ElevenGUI:
 
     def create_top_frame(self):
         top_frame = ctk.CTkFrame(self.root, height=80, fg_color="transparent")
-        top_frame.grid(row=1, column=1, sticky="nsew", padx=15, pady=0)
+        top_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=0)
         return top_frame
 
     def create_text_box(self):
         text_box = ctk.CTkTextbox(self.root, wrap=ctk.WORD)
-        text_box.grid(row=2, column=1, sticky="nsew", padx=10, pady=(10, 0))
+        text_box.grid(row=3, column=1, sticky="nsew", padx=10, pady=(10, 0))
         text_box.bind('<Control-v>', lambda event: custom_paste(event,
                       text_box, self.char_count, self.generate_button))
         text_box.bind('<Any-KeyPress>', lambda event: check_character_limit(event,
@@ -265,11 +269,11 @@ class ElevenGUI:
         scaling_label = ctk.CTkLabel(
             sidebar_frame, text="UI Scaling:", anchor="w")
         scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        scaling_optionmenu = ctk.CTkOptionMenu(sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
+        scaling_optionmenu = ctk.CTkOptionMenu(sidebar_frame, values=["50%", "80%", "90%", "100%", "110%", "120%"],
                                                command=self.change_scaling_event)
         scaling_optionmenu.grid(row=8, column=0, padx=20, pady=(10, 20))
         appearance_mode_optionmenu.set("Light")
-        scaling_optionmenu.set("100%")
+        scaling_optionmenu.set("80%")
 
     def create_sidebar(self):
         sidebar_frame = ctk.CTkFrame(self.root, width=140, corner_radius=0)
@@ -673,6 +677,14 @@ class ElevenGUI:
                         lambda event: self.on_treeview_select(self, event))
 
     def create_spanish_table(self):
+
+        # Get data first, unless we use levanteData.py
+        spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
+        spanish_dataframe = pd.read_excel(spanish_data_file)
+
+        spanish_table = ttk.Treeview(columns=("size", "lastmod"))
+        spanish_table.grid(row=2, column=1, sticky="nsew", padx=10, pady=(10, 0))
+
         self.style = ttk.Style()
         self.style.theme_use("clam")
         self.style.configure("Tableview",
@@ -692,24 +704,30 @@ class ElevenGUI:
         self.style.map("Tableview.Heading",
                        background=[('active', '#3484F0')])
 
+        columns = ("ID", "Task", "English", "Spanish")
+
         self.spanish_table = ttk.Treeview(
-                                  columns=('ID', 'English',
-                                           'Translation'),
-                                  selectmode='browse',
-                                  show='headings')
+                                #self.add_menu_display,
+                                columns=columns,
+                                selectmode='browse',
+                                show='headings')
 
         self.spanish_table.column("#1", anchor="w", minwidth=5, stretch=False)
         self.spanish_table.column("#2", anchor="w", minwidth=5, stretch=False)
         self.spanish_table.column("#3", anchor="w", minwidth=200)
+        self.spanish_table.column("#4", anchor="w", minwidth=200)
 
         self.spanish_table.heading('ID', text='Item ID', anchor="w")
+        self.spanish_table.heading('Task', text='Item ID', anchor="w")
         self.spanish_table.heading('English', text='English', anchor="w")
-        self.spanish_table.heading('Translation', text='Spanish', anchor="w")
+        self.spanish_table.heading('Spanish', text='Spanish', anchor="w")
 
-        self.spanish_table.grid(row=3, column=1, sticky='nsew', padx=10, pady=10)
+        # add contents
+        self.spanish_table.insert("",'end', values=("ID", "Task", "Native string", "Translated String","Other Info"))
+        self.spanish_table.grid(row=2, column=1, sticky='nsew', padx=10, pady=10)
 
         self.spanish_table.bind("<<TreeviewSelect>>",
-                        lambda event: self.on_translation_table_select(self, event))
+                        lambda event: self.on_treeview_select(self, event))
 
     # --------------------------------------------------------------------------------------------
 
@@ -721,7 +739,7 @@ class ElevenGUI:
 
     def create_main_content(self):
         self.top_frame = self.create_top_frame()
-        self.create_spanish_table()
+        self.spanish_table = self.create_spanish_table()
         self.text_box = self.create_text_box()
         self.char_count, self.right_button = self.create_text_status_frame()
         self.settings_label, self.preview_label = self.create_sample_frame()
@@ -804,4 +822,4 @@ class ElevenGUI:
 
 
 if __name__ == "__main__":
-    ElevenGUI()
+    LevanteAudio()
