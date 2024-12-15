@@ -1,9 +1,9 @@
-# ElevenGUI
+# Levante Audio
 
-ElevenGUI is a graphical user interface for the ElevenLabs API. It can also utilize OpenAI's Whisper for speech-to-text transcription, if installed.
+Levente Audio is a graphical user interface for the ElevenLabs API. It can also utilize OpenAI's Whisper for speech-to-text transcription, if installed.
 ## Features
 
-With ElevenGUI, you can:
+With Levante Audio, you can:
 
 - Interact with the ElevenLabs API in real-time
 - Record or upload audio files for transcription via OpenAI's Whisper (optional)
@@ -12,8 +12,6 @@ With ElevenGUI, you can:
 
 ## Installation
 
-
-https://github.com/winedarkmoon/ElevenGUI/assets/127571479/266635fd-6b31-4dc7-a3c6-b829d540c4d1
 
 
 Ensure you have Python 3.9 or higher installed. Creating a Python virtual environment before the installation is recommended.
