@@ -15,8 +15,8 @@ import re
 import logging
 import sys
 
-# For when we need to import data 
-import pandas as pd
+# Get language info 
+import levanteData
 
 # Added features are available if you have OpenAI or Whisper
 try:
@@ -42,6 +42,7 @@ ctk.set_default_color_theme("blue")
 table_row_span = 2 # how many rows our source table(s) want
 
 load_dotenv()
+# You need to set your ElevenLabs key as an environment variable
 ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
@@ -598,6 +599,7 @@ class LevanteAudio:
         selected_item = self.spanish_table.selection()[0]
         # This seems brittle, but should work until it doesn't!
         translated_text = self.spanish_table.item(selected_item, "values")[3]
+        self.text_box.delete('1.0', tk.END)
         self.text_box.insert("1.0", translated_text)
         delay = 50
 
@@ -613,11 +615,12 @@ class LevanteAudio:
     def create_spanish_table(self):
 
         # Get data first, unless we use levanteData.py
-        spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
-        spanish_dataframe = pd.read_excel(spanish_data_file)
+        # See if we can get them from LevanteData
+        #spanish_data_file = './data/Tasks_ItemBank_Spanish.xlsx'
+        #spanish_dataframe = pd.read_excel(spanish_data_file)
 
         # Treeview doesn't like column headers with a dash
-        spanish_dataframe = spanish_dataframe.rename(columns={"es-co": "es_co"})
+        spanish_dataframe = levanteData.spanish_dataframe.rename(columns={"es-co": "es_co"})
         
         self.style = ttk.Style()
         self.style.theme_use("clam")

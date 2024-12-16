@@ -14,4 +14,4 @@ german_data_file = './data/Tasks_ItemBank_German.xlsx'
 german_dataframe = pd.read_excel(german_data_file)
 
 #for debugging
-print(german_dataframe)
+#print(german_dataframe)
