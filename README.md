@@ -1,4 +1,8 @@
-## Levante Audio
+### Levante Audio -- Placeholder location for translated data
+
+From Crowdin, until we get permissions sorted for them to go to a levante-framework repo
+
+## Levante Audio -- Original
 
 Levente Audio is a graphical user interface for the ElevenLabs API. It can also utilize OpenAI's Whisper for speech-to-text transcription, if installed.
 
